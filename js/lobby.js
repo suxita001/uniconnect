@@ -112,7 +112,7 @@ document.querySelectorAll(".mode-card").forEach(card => {
   });
 });
 
-// ---- Find Chat (with transaction to fix race condition) ----
+// ---- Find Chat ----
 document.getElementById("btn-find-chat").addEventListener("click", async () => {
   if (isSearching) return;
   isSearching = true;
@@ -121,13 +121,11 @@ document.getElementById("btn-find-chat").addEventListener("click", async () => {
   document.getElementById("waiting-state").style.display = "block";
 
   try {
-    // Use transaction to atomically claim a waiting user
-    const waitingRef = collection(db, "waiting");
     const waitingQ = query(
-      waitingRef,
+      collection(db, "waiting"),
       where("mode", "==", selectedMode),
       where("uid", "!=", currentUser.uid),
-      limit(5) // get a few to try
+      limit(5)
     );
 
     const waitingSnap = await getDocs(waitingQ);
@@ -137,23 +135,21 @@ document.getElementById("btn-find-chat").addEventListener("click", async () => {
       try {
         const partnerData = partnerDoc.data();
 
-        // Use transaction to atomically match
+        // Pre-create roomRef OUTSIDE transaction (collection() inside transaction is not allowed)
+        const roomRef = doc(collection(db, "rooms"));
+
         await runTransaction(db, async (transaction) => {
+          // Verify partner is still waiting
           const partnerWaitSnap = await transaction.get(partnerDoc.ref);
           if (!partnerWaitSnap.exists()) throw new Error("already_matched");
 
-          // Create room
-          const roomData = {
+          transaction.set(roomRef, {
             users: [currentUser.uid, partnerData.uid],
             mode: selectedMode,
             active: true,
             createdAt: serverTimestamp(),
             messageCount: 0
-          };
-
-          const roomRef = doc(collection(db, "rooms"));
-
-          transaction.set(roomRef, roomData);
+          });
           transaction.set(doc(db, "userRoom", currentUser.uid), {
             roomId: roomRef.id,
             partnerId: partnerData.uid,
@@ -172,10 +168,7 @@ document.getElementById("btn-find-chat").addEventListener("click", async () => {
         });
 
         matched = true;
-
-        // Update chat count for both users
         updateDoc(doc(db, "users", currentUser.uid), { totalChats: (userProfile.totalChats || 0) + 1 }).catch(() => {});
-
         window.location.href = "chat.html";
         break;
       } catch (err) {
@@ -185,7 +178,6 @@ document.getElementById("btn-find-chat").addEventListener("click", async () => {
     }
 
     if (!matched) {
-      // Add self to waiting
       await setDoc(doc(db, "waiting", currentUser.uid), {
         uid: currentUser.uid,
         mode: selectedMode,
