@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>WhisperNet — ჩატი</title>
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/chat.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Partner Profile Modal -->
+  <div class="modal-overlay" id="profile-modal" style="display:none">
+    <div class="modal-card glass">
+      <button class="modal-close" id="modal-close">✕</button>
+      <div class="modal-avatar" id="modal-avatar">?</div>
+      <h2 class="modal-name" id="modal-name">—</h2>
+      <p class="modal-gender" id="modal-gender">—</p>
+      <p class="modal-likes">❤️ <span id="modal-likes-count">0</span> მოწონება</p>
+      <div class="modal-mode-badge" id="modal-role-badge" style="display:none"></div>
+      <button class="btn-like" id="btn-like">
+        <span id="like-icon">🤍</span> <span id="like-label">მომწონს</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Chat Header -->
+  <header class="chat-header">
+    <button class="btn-icon" id="btn-leave" title="ჩატიდან გასვლა">←</button>
+    <div class="chat-partner" id="chat-partner-info">
+      <div class="partner-avatar-sm" id="header-avatar">?</div>
+      <div class="partner-meta">
+        <span class="partner-name" id="header-name">—</span>
+        <span class="partner-status" id="partner-status">ჩაბარებული</span>
+      </div>
+    </div>
+    <button class="btn-icon" id="btn-view-profile" title="პროფილის ნახვა">👤</button>
+  </header>
+
+  <!-- Roleplay Banner -->
+  <div class="role-banner" id="role-banner" style="display:none">
+    <span class="role-banner-text">🎭 შენი როლი: <strong id="my-role-display"></strong></span>
+  </div>
+
+  <!-- Messages -->
+  <div class="messages-container" id="messages-container">
+    <div class="chat-start-hint">
+      <div class="hint-icon">◈</div>
+      <p>ჩატი დაიწყო. გამარჯობა! 👋</p>
+      <p style="margin-top:6px;font-size:0.74rem;color:var(--text-muted)">დიდხანს დაჭირეთ bubble-ზე — emoji რეაქციისთვის</p>
+    </div>
+  </div>
+
+  <!-- Typing Indicator -->
+  <div class="typing-indicator" id="typing-indicator" style="display:none">
+    <div class="typing-dots"><span></span><span></span><span></span></div>
+    <span id="typing-name">—</span> წერს...
+  </div>
+
+  <!-- Quick Questions -->
+  <div class="quick-questions" id="quick-questions-panel" style="display:none">
+    <div class="qq-scroll" id="qq-scroll"></div>
+  </div>
+
+  <!-- Chat Input -->
+  <footer class="chat-footer">
+    <button class="btn-icon accent" id="btn-questions" title="მზა კითხვები">💡</button>
+    <div class="input-wrap">
+      <textarea id="msg-input" placeholder="დაწერე რამე..." rows="1" maxlength="500"></textarea>
+    </div>
+    <button class="btn-send" id="btn-send">➤</button>
+  </footer>
+
+  <script type="module" src="js/firebase-init.js"></script>
+  <script type="module" src="js/chat.js"></script>
+</body>
+</html>
